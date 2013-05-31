@@ -82,10 +82,10 @@ function cpuAverage() {
 }
 
 function findUptime(){
-  var uptime = os.uptime();
-  var days = uptime / 60 / 60 / 24;
-  var hours =  uptime / 60 / 60 - (~~days * 24);
-  var minutes = uptime / 60 - (~~hours * 60);
-  var seconds = uptime - ((~~minutes * 60) + (~~hours * 60 * 60) + (~~days * 24 * 60 * 60));
+  var uptime = os.uptime(); 
+  var days = uptime / 60 / 60 / 24; 
+  var hours =  uptime / 60 / 60 - (~~days * 24); 
+  var minutes = uptime / 60 - ((~~hours * 60) + (~~days * 24 * 60)); 
+  var seconds = uptime - ((~~minutes * 60) + (~~hours * 60 * 60) + (~~days * 24 * 60 * 60)); 
   return { days: ~~days, hours: ~~hours, minutes: ~~minutes, seconds: ~~seconds }
 }
