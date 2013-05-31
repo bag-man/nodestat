@@ -76,6 +76,12 @@
 
     socket.on('cpu', function (data) {
       var percent = (data.current / data.maximum) * 100;
+      if(percent == 100){
+        document.getElementById("cpuvalue").style.borderRight="15px solid #333";
+      } else {
+        document.getElementById("cpuvalue").style.borderRight="15px solid #666";
+      }
+
       d3.select("#cpuvalue")
         .style("width", ~~percent * 10)
         .text(data.current)
@@ -86,14 +92,20 @@
     });
 
     socket.on('memory', function (data) {
-     var percent = (data.current / data.maximum) * 100;
-     d3.select("#memvalue")
-       .style("width", ~~percent * 10)
-       .text(data.current)
+      var percent = (data.current / data.maximum) * 100;
+      if(percent == 100){
+        document.getElementById("memvalue").style.borderRight="15px solid #333";
+      } else {
+        document.getElementById("memvalue").style.borderRight="15px solid #666";
+      }
 
-     d3.select("#memlabel")
-       //.text("Memory " + data.maximum + "MB")
-       .text("Memory")
+      d3.select("#memvalue")
+        .style("width", ~~percent * 10)
+        .text(data.current)
+
+      d3.select("#memlabel")
+        //.text("Memory " + data.maximum + "MB")
+        .text("Memory")
     });
   </script>
   </body>                                                                 
