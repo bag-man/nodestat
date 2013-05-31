@@ -3,6 +3,8 @@ nodestat
 
 This is a really simple script to display the servers CPU and RAM usage in real time with a pretty d3 bar graph. 
 
+You can view a live version here: http://www.squixy.co.uk:8080/
+
 It requires socket.io and express to be ran. 
 
 It has a few issues, firstly I think the CPU usage isn't the current average but rather the average since the script started, and secondly when there is 100% usage the bars get ruined. 
