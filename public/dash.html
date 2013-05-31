@@ -50,6 +50,7 @@
     var socket = io.connect('/');
     var cpudiv = d3.selectAll("body").append("div");
     var memdiv = d3.selectAll("body").append("div");
+    var updiv = d3.selectAll("body").append("div");
 
     cpudiv.style("position","relative"); 
       cpudiv.append("div")
@@ -73,6 +74,11 @@
         .attr("class","label")
         .attr("id","memlabel")
 	.text("RAM");
+      memdiv.append("br");
+
+    updiv.append("div")
+      .attr("id","uptime")
+      .attr("class","label");
 
     socket.on('cpu', function (data) {
       var percent = (data.current / data.maximum) * 100;
@@ -106,6 +112,11 @@
       d3.select("#memlabel")
         //.text("Memory " + data.maximum + "MB")
         .text("Memory")
+    });
+
+    socket.on('uptime', function (data) {
+      d3.select("#uptime")
+        .text(data.days + " days " + data.hours + " hours " + data.minutes + " minutes " + data.seconds + " seconds uptime");  
     });
   </script>
   </body>                                                                 

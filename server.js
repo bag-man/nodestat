@@ -7,9 +7,11 @@ var server = http.createServer(app);
 var io = require('socket.io').listen(server);
 var totalmem = ~~(os.totalmem() / 1024 /1024);
 
+
 //Start server
 server.listen(80);
 console.log("Server started at http://127.0.0.1:80");
+
 
 //Direct to dashboard
 app.get('/', function (req, res) {
@@ -30,7 +32,10 @@ setInterval(function(){
      var idleDifference = endMeasure.idle - startMeasure.idle;
      var totalDifference = endMeasure.total - startMeasure.total;
      var percentageCPU = 100 - ~~(100 * idleDifference / totalDifference);
+     
+     uptime = findUptime();
 
+     socket.emit('uptime', {"days":uptime.days,"hours":uptime.hours,"minutes":uptime.minutes,"seconds":uptime.seconds});
      socket.emit('memory', {"current":usedRAM,"maximum":totalmem});
      socket.emit('cpu', {"current":percentageCPU,"maximum":100});
    }
@@ -74,4 +79,13 @@ function cpuAverage() {
      totalIdle += cpu.times.idle;
    }
   return {idle: totalIdle / cpus.length,  total: totalTick / cpus.length};
+}
+
+function findUptime(){
+  var uptime = os.uptime();
+  var days = uptime / 60 / 60 / 24;
+  var hours =  uptime / 60 / 60 - (~~days * 24);
+  var minutes = uptime / 60 - (~~hours * 60);
+  var seconds = uptime - ((~~minutes * 60) + (~~hours * 60 * 60) + (~~days * 24 * 60 * 60));
+  return { days: ~~days, hours: ~~hours, minutes: ~~minutes, seconds: ~~seconds }
 }
