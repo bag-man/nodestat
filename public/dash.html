@@ -1,0 +1,100 @@
+<html>                                                                  
+  <head>                                                                  
+    <meta http-equiv="content-type" content="text/html;charset=UTF-8">
+    <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <style>
+      body{ 
+        background-color: #333;
+      }
+
+      .value {
+        color: white;
+        font-family: sans-serif;
+        background-color: #888888;
+        width: 1000px;
+        height: 0px;
+        border-bottom: 15px solid transparent;
+        border-right: 15px solid #666;
+        position: absolute;
+        z-index: 3;
+        text-align: left;
+      }
+
+      .total {
+        color: white;
+        font-family: sans-serif;
+        background-color: #666666;
+        width: 1000px;
+        height: 15px;
+        position: absolute;
+        z-index: 1;
+        text-align: right;
+        height: 0px;
+        border-bottom: 15px solid transparent;
+        border-right: 15px solid #333333;
+      }
+      
+      .label {
+        z-index: 2;
+        width: 1000px;
+        text-align: right;
+        position: absolute;
+        font-family: sans-serif;
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+  <script>
+    var socket = io.connect('/');
+    var cpudiv = d3.selectAll("body").append("div");
+    var memdiv = d3.selectAll("body").append("div");
+
+    cpudiv.style("position","relative"); 
+      cpudiv.append("div")
+        .attr("id", "cpuvalue")
+        .attr("class","value");
+      cpudiv.append("div")
+        .attr("class","total");
+      cpudiv.append("div")
+        .attr("class","label")
+        .attr("id","cpulabel")
+	.text("CPU");
+      cpudiv.append("br");
+
+    memdiv.style("position","relative"); 
+      memdiv.append("div")
+        .attr("id", "memvalue")
+        .attr("class","value");
+      memdiv.append("div")
+        .attr("class","total");
+      memdiv.append("div")
+        .attr("class","label")
+        .attr("id","memlabel")
+	.text("RAM");
+
+    socket.on('cpu', function (data) {
+      var percent = (data.current / data.maximum) * 100;
+      d3.select("#cpuvalue")
+        .style("width", ~~percent * 10)
+        .text(data.current)
+
+      d3.select("#cpulabel")
+        //.text("CPU " + data.maximum + "%")
+        .text("CPU")
+    });
+
+    socket.on('memory', function (data) {
+     var percent = (data.current / data.maximum) * 100;
+     d3.select("#memvalue")
+       .style("width", ~~percent * 10)
+       .text(data.current)
+
+     d3.select("#memlabel")
+       //.text("Memory " + data.maximum + "MB")
+       .text("Memory")
+    });
+  </script>
+  </body>                                                                 
+</html>
