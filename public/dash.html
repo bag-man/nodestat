@@ -6,19 +6,57 @@
     <script src="/socket.io/socket.io.js"></script>
     <style>
       body{ 
-        background-color: #333;
+	height:100%;
+	background:url('img/bg.png');
+	margin:0px;
+	font-family:arial;
+	box-shadow:inset 0px 0px 100px #333333;
+	-moz-box-shadow: inset 0px 0px 100px #333333;
+	-webkit-box-shadow:inset 0px 0px 100px #333333;
+      }
+
+      #footer {
+	padding-bottom:10px;
+	margin-top:30px;
+      }
+
+      #page {
+	width:960px;
+	height:auto;
+	background-color:#ffffff;
+
+	/*Space*/
+	padding-top:20px;
+	padding-bottom:20px;
+	padding-left:40px;
+	padding-right:0px;
+	margin-top:0px;
+	margin-bottom:0px;
+	margin-left:auto;
+	margin-right:auto;
+
+	/*Shadow*/
+	-moz-box-shadow: 0px 0px 100px 0px #999999,inset 0 0 10px #000000;
+	-webkit-box-shadow: 0px 0px 100px 0px #999999,inset 0 0 10px #000000;
+	box-shadow: 0px 0px 100px 0px #999999,inset 0 0 10px #000000;
+
+	/*Border Radius*/
+	border-radius:0px 0px 20px 20px;
+	-moz-border-radius:0px 0px 20px 20px;
+	-webkit-border-radius:0px 0px 20px 20px;
+	-o-border-radius:0px 0px 20px 20px;
       }
 
       .value {
         color: white;
         font-family: sans-serif;
         background-color: #888888;
-        width: 1000px;
         height: 0px;
         border-bottom: 15px solid transparent;
         border-right: 15px solid #666;
         position: absolute;
         z-index: 2;
+        width: 0px;
         text-align: left;
       }
 
@@ -26,19 +64,19 @@
         color: white;
         font-family: sans-serif;
         background-color: #666666;
-        width: 1000px;
+        width: 900px;
         height: 15px;
         position: absolute;
         z-index: 1;
         text-align: right;
         height: 0px;
         border-bottom: 15px solid transparent;
-        border-right: 15px solid #333333;
+        border-right: 15px solid #FFFFFF;
       }
       
       .label {
         z-index: 3;
-        width: 1000px;
+        width: 900px;
         text-align: right;
         position: absolute;
         font-family: sans-serif;
@@ -47,78 +85,125 @@
     </style>
   </head>
   <body>
-  <script>
-    var socket = io.connect('/');
-    var cpudiv = d3.selectAll("body").append("div");
-    var memdiv = d3.selectAll("body").append("div");
-    var updiv = d3.selectAll("body").append("div");
+    <script>
 
-    cpudiv.style("position","relative"); 
-      cpudiv.append("div")
-        .attr("id", "cpuvalue")
-        .attr("class","value");
-      cpudiv.append("div")
-        .attr("class","total");
-      cpudiv.append("div")
-        .attr("class","label")
-        .attr("id","cpulabel")
-	.text("CPU");
-      cpudiv.append("br");
+      //Need to detect window resize
+      var magicnumber = 9;
+      var socket = io.connect('/');
 
-    memdiv.style("position","relative"); 
-      memdiv.append("div")
-        .attr("id", "memvalue")
-        .attr("class","value");
-      memdiv.append("div")
-        .attr("class","total");
-      memdiv.append("div")
-        .attr("class","label")
-        .attr("id","memlabel")
-	.text("RAM");
-      memdiv.append("br");
+      var pagediv = d3.select("body").append("div")
+	.attr("id","page");
 
-    updiv.append("div")
-      .attr("id","uptime")
-      .attr("class","label");
+      var cpudiv = pagediv.append("div");
+      var memdiv = pagediv.append("div");
+      var updiv = pagediv.append("div");
 
-    socket.on('cpu', function (data) {
-      var percent = (data.current / data.maximum) * 100;
-      if(percent == 100){
-        document.getElementById("cpuvalue").style.borderRight="15px solid #333";
-      } else {
-        document.getElementById("cpuvalue").style.borderRight="15px solid #666";
+      var footer = d3.select("body").append("div")    
+	.attr("id","footer");
+
+      cpudiv.style("position","relative") 
+	.style("height","18px")
+	.style("margin-right","10px");
+	cpudiv.append("div")
+	  .attr("id", "cpuvalue")
+	  .attr("class","value");
+	cpudiv.append("div")
+	  .attr("class","total");
+	cpudiv.append("div")
+	  .attr("class","label")
+	  .attr("id","cpulabel")
+	  .text("CPU");
+
+      memdiv.style("position","relative") 
+	.style("height","18px")
+	.style("margin-right","10px");
+	memdiv.append("div")
+	  .attr("id", "memvalue")
+	  .attr("class","value");
+	memdiv.append("div")
+	  .attr("class","total");
+	memdiv.append("div")
+	  .attr("class","label")
+	  .attr("id","memlabel")
+	  .text("RAM");
+
+      updiv.style("position","relative")
+	.style("height","18px")
+	.style("margin-right","10px");
+      updiv.append("div")
+	.attr("id", "upvalue")
+	.attr("class","value");
+      updiv.append("div")
+	.attr("class","total");
+      updiv.append("div")
+	.attr("id","uptime")
+	.attr("class","label");
+
+      socket.on('cpu', function (data) {
+	var percent = (data.current / data.maximum) * 100;
+	if(percent == 100){
+	  document.getElementById("cpuvalue").style.borderRight="15px solid #333";
+	} else {
+	  document.getElementById("cpuvalue").style.borderRight="15px solid #666";
+	}
+       
+	//Warning system that doesn't work
+	/*if(percent >= 80) {
+	  setInterval("flashTitle('Dash', '*** WARNING ***')", 3000);
+	} else { 
+	  //window.parent.document.title = "Dash";
+	}*/
+
+	d3.select("#cpuvalue")
+	  .style("width", ~~percent * magicnumber)
+	  .text(data.current)
+
+	d3.select("#cpulabel")
+	  //.text("CPU " + data.maximum + "%")
+	  .text("CPU")
+      });
+
+      socket.on('memory', function (data) {
+	var percent = (data.current / data.maximum) * 100;
+	if(percent == 100){
+	  document.getElementById("memvalue").style.borderRight="15px solid #333";
+	} else {
+	  document.getElementById("memvalue").style.borderRight="15px solid #666";
+	}
+
+	d3.select("#memvalue")
+	  .style("width", ~~percent * magicnumber)
+	  .text(data.current)
+
+	d3.select("#memlabel")
+	  //.text("Memory " + data.maximum + "MB")
+	  .text("Memory")
+      });
+
+      socket.on('uptime', function (data) {
+	var percent = (data.seconds / 60 ) * 100;
+	if(percent == 100){
+	  document.getElementById("upvalue").style.borderRight="15px solid #333";
+	  window.parent.document.title = "*** 100% USAGE ***";
+	} else {
+	  document.getElementById("upvalue").style.borderRight="15px solid #666";
+	  window.parent.document.title = "Dash";
+	}
+	d3.select("#upvalue")
+	  .style("width", ~~percent * magicnumber)
+	  .text("Uptime")
+	d3.select("#uptime")
+	  .text(data.days + " days " + data.hours + " hours " + data.minutes + " minutes " + data.seconds + " seconds");  
+      });
+
+      function flashTitle(pageTitle, newMessageTitle) {
+	if (document.title == pageTitle) {
+	  document.title = newMessageTitle;
+	}
+	else {
+	  document.title = pageTitle;
+	}
       }
-
-      d3.select("#cpuvalue")
-        .style("width", ~~percent * 10)
-        .text(data.current)
-
-      d3.select("#cpulabel")
-        //.text("CPU " + data.maximum + "%")
-        .text("CPU")
-    });
-
-    socket.on('memory', function (data) {
-      var percent = (data.current / data.maximum) * 100;
-      if(percent == 100){
-        document.getElementById("memvalue").style.borderRight="15px solid #333";
-      } else {
-        document.getElementById("memvalue").style.borderRight="15px solid #666";
-      }
-
-      d3.select("#memvalue")
-        .style("width", ~~percent * 10)
-        .text(data.current)
-
-      d3.select("#memlabel")
-        //.text("Memory " + data.maximum + "MB")
-        .text("Memory")
-    });
-
-    socket.on('uptime', function (data) {
-      d3.select("#uptime")
-        .text(data.days + " days " + data.hours + " hours " + data.minutes + " minutes " + data.seconds + " seconds uptime");  
-    });
-  </script>
+    </script>
   </body>                                                                 
 </html>

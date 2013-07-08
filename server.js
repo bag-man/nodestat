@@ -12,7 +12,6 @@ var totalmem = ~~(os.totalmem() / 1024 /1024);
 server.listen(80);
 console.log("Server started at http://127.0.0.1:80");
 
-
 //Direct to dashboard
 app.get('/', function (req, res) {
   res.sendfile(__dirname + '/public/dash.html');
