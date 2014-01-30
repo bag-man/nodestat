@@ -139,6 +139,7 @@
 	.attr("class","label");
 
       socket.on('cpu', function (data) {
+      	console.log(data);
 	var percent = (data.current / data.maximum) * 100;
 	if(percent == 100){
 	  document.getElementById("cpuvalue").style.borderRight="15px solid #333";
