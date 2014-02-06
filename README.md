@@ -9,3 +9,7 @@ It requires socket.io and express to be ran.
 
 The plan was to make it have a lot more useful stats on, and a github issue tracker, twitter and even maybe a white board. But for the moment I am going to leave it as is, and move on to a new project!
 
+
+You can install with npm by running 
+
+    npm install nodestat
